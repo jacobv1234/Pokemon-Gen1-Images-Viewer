@@ -1,4 +1,5 @@
 from tkinter import *
+from time import sleep
 import os
 
 white = '#FFFFFF'
@@ -43,21 +44,69 @@ hextobin = {
     'f' : '1111'
 }
 
-binary = ''
+binarydata = ''
 for char in rawhex:
-    binary += hextobin[char]
+    binarydata += hextobin[char]
 
 window = Tk()
 c = Canvas(width = 560, height = 560, bg = white)
 c.pack()
 
-lines = []
-for i in range(57):
-    if i % 8 == 0:
-        lines.append(c.create_line(0,i*10,560,i*10, fill=black))
-        lines.append(c.create_line(i*10,0,i*10,560, fill=black))
-    else:
-        lines.append(c.create_line(0,i*10,560,i*10, fill=lightgrey))
-        lines.append(c.create_line(i*10,0,i*10,560, fill=lightgrey))
 
-#window.mainloop()
+def bin_to_int(binary):
+    total = 0
+    worth = 1
+    for i in range(len(binary),0,-1):
+        total += worth * int(binary[i-1])
+        worth *= 2
+    return total
+
+datapointer = 0 #this shows the index of the next bit
+
+def get_next_bits(amount_returned):
+    global datapointer, binarydata
+    returned_bits = ''
+    for i in range(amount_returned):
+        returned_bits += binarydata[datapointer]
+        datapointer += 1
+    return returned_bits
+
+
+width = bin_to_int(get_next_bits(4))
+height = bin_to_int(get_next_bits(4))
+firstbp = int(get_next_bits(1))
+currentpacket = int(get_next_bits(1))
+
+x = 0
+y = 0
+
+#add whitespace
+v_offset = 7 - height
+c.create_rectangle(0,0,1120,80*v_offset,fill=white)
+h_offset_left = 4 - ((width + 1)//2)
+h_offset_right = 3 - (width//2)
+c.create_rectangle(0,0,80*h_offset_left,560,fill='white')
+c.create_rectangle(560,0,560+(80*h_offset_left),560,fill='white')
+c.create_rectangle(560,0,560-(80*h_offset_right),560,fill='white')
+c.create_rectangle(1120,0,1120-(80*h_offset_right),560,fill='white')
+
+x += 8*h_offset_left
+y += 8*v_offset
+
+if firstbp == 1:
+    x += 0
+else:
+    x += 56
+
+
+while True:
+    if currentpacket == 0:
+        firstnumber = ''
+        while True:
+            firstnumber += get_next_bits(1)
+            if firstnumber[-1] == '0':
+                break
+        secondnumber = bin_to_int(get_next_bits(len(firstnumber)))
+        firstnumber = bin_to_int(firstnumber)
+        zeropairs = firstnumber + secondnumber + 1
+
