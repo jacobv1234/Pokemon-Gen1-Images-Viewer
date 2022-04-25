@@ -3,8 +3,8 @@ from time import sleep
 import os
 
 white = '#FFFFFF'
-lightgrey = '#AAAAAA'
-darkgrey = '#666666'
+lightgrey = '#777777'
+darkgrey = '#333333'
 black = '#000000'
 
 imagename = input('Enter the name of the image in Converted_Graphics: ')
@@ -49,7 +49,7 @@ for char in rawhex:
     binarydata += hextobin[char]
 
 window = Tk()
-c = Canvas(width = 560, height = 560, bg = white)
+c = Canvas(width = 1120, height = 560, bg = white)
 c.pack()
 
 
@@ -82,13 +82,14 @@ y = 0
 
 #add whitespace
 v_offset = 7 - height
-c.create_rectangle(0,0,1120,80*v_offset,fill=white)
+c.create_rectangle(0,0,1120,80*v_offset,fill=white, outline = white)
 h_offset_left = 4 - ((width + 1)//2)
 h_offset_right = 3 - (width//2)
-c.create_rectangle(0,0,80*h_offset_left,560,fill='white')
-c.create_rectangle(560,0,560+(80*h_offset_left),560,fill='white')
-c.create_rectangle(560,0,560-(80*h_offset_right),560,fill='white')
-c.create_rectangle(1120,0,1120-(80*h_offset_right),560,fill='white')
+c.create_rectangle(0,0,80*h_offset_left,560,fill='white', outline = white)
+c.create_rectangle(560,0,560+(80*h_offset_left),560,fill='white', outline = white)
+c.create_rectangle(560,0,560-(80*h_offset_right),560,fill='white', outline = white)
+c.create_rectangle(1120,0,1120-(80*h_offset_right),560,fill='white', outline = white)
+window.update()
 
 x += 8*h_offset_left
 y += 8*v_offset
@@ -98,15 +99,178 @@ if firstbp == 1:
 else:
     x += 56
 
+#create 2d array, 112 x 56 - x and y are pointers to the array
+grid = []
+for i in range(112):
+    column = []
+    for j in range(56):
+        column.append(0)
+    grid.append(column)
 
-while True:
-    if currentpacket == 0:
-        firstnumber = ''
-        while True:
-            firstnumber += get_next_bits(1)
-            if firstnumber[-1] == '0':
-                break
-        secondnumber = bin_to_int(get_next_bits(len(firstnumber)))
-        firstnumber = bin_to_int(firstnumber)
-        zeropairs = firstnumber + secondnumber + 1
 
+
+def decodebitplane():
+    global x, y, grid, currentpacket
+    pixelsdrawn = 0
+    while True:
+        if pixelsdrawn >= (8*width)*(8*height):
+            print('Decoded bitplane')
+            break
+
+        if currentpacket == 0:
+            firstnumber = ''
+            while True:
+                firstnumber += get_next_bits(1)
+                if firstnumber[-1] == '0':
+                    break
+
+            secondnumber = bin_to_int(get_next_bits(len(firstnumber)))
+            firstnumber = bin_to_int(firstnumber)
+            zeropairs = firstnumber + secondnumber + 1
+
+            for i in range(zeropairs):
+                grid[x][y] = 0
+                grid[x+1][y] = 0
+                c.create_rectangle(x*10,y*10,(x*10)+20,(y*10)+10, fill = white, outline = white)
+                y += 1
+                if y >= 56:
+                    y = 8*v_offset
+                    x += 2
+                window.update()
+                pixelsdrawn += 2
+
+            currentpacket = 1
+
+        if pixelsdrawn >= (8*width)*(8*height):
+            print('Decoded bitplane')
+            break
+
+        if currentpacket == 1:
+            while True:
+                next2bits = get_next_bits(2)
+                if next2bits == '00':
+                    break
+
+                else:
+                    for i in range(2):
+                        if next2bits[i] == '0':
+                            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                            grid[x][y] = 0
+                        else:
+                            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black)
+                            grid[x][y] = 1
+                        pixelsdrawn += 1
+                        x += 1
+
+                    x -= 2
+                    y += 1
+                    if y >= 56:
+                        y = 8*v_offset
+                        x += 2
+                    window.update()
+
+            currentpacket = 0
+
+decodebitplane()
+sleep(1)
+
+encodingmode = get_next_bits(1)
+if encodingmode == '1':
+    encodingmode += get_next_bits(1)
+encodingmode = bin_to_int(encodingmode)
+if encodingmode == 0:
+    encodingmode = 1
+
+if x >= 84:
+    x = 8*h_offset_left
+else:
+    x = 8*h_offset_left + 56
+y = 8*v_offset
+
+currentpacket = bin_to_int(get_next_bits(1))
+
+decodebitplane()
+sleep(1)
+
+def deltadecode(bitplane): #0 is left, 1 is right
+    global grid, x, y
+    if bitplane == 0:
+        xstart = 0
+    else:
+        xstart = 56
+    y = 0
+
+    for i in range(56):
+        x = xstart
+        col = False
+
+        for j in range(56):
+            flipornot = grid[x][y]
+            if flipornot == 1:
+                col = not col
+            
+            if col:
+                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black)
+                grid[x][y] = 1
+            else:
+                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                grid[x][y] = 0
+            
+            x += 1
+        y += 1
+        window.update()
+    print('Bitplane ' + str(bitplane) + ' delta decoded successfully.')
+    
+def xor(): #no bitplane is needed, only uses right
+    global x, y, grid
+    for y in range(56):
+        for x in range(56,112):
+            if grid[x][y] == grid[x-56][y]:
+                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                grid[x][y] = 0
+            else:
+                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black)
+                grid[x][y] = 1
+        window.update()
+    print('XOR performed successfully.')
+
+if encodingmode == 1:
+    deltadecode(0)
+    sleep(1)
+    deltadecode(1)
+    sleep(1)
+
+elif encodingmode == 2:
+    deltadecode(0)
+    sleep(1)
+    xor()
+    sleep(1)
+
+else:
+    deltadecode(0)
+    sleep(1)
+    deltadecode(1)
+    sleep(1)
+    xor()
+    sleep(1)
+
+def combine_bitplanes():
+    global x, y, grid
+    for y in range(56):
+        for x in range(56):
+            colour = ''
+            if grid[x][y] == 0 and grid[x+56][y] == 0:
+                colour = white
+            elif grid[x][y] == 0 and grid[x+56][y] == 1:
+                colour = lightgrey
+            elif grid[x][y] == 1 and grid[x+56][y] == 0:
+                colour = darkgrey
+            else:
+                colour = black
+            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = colour, outline = colour)
+        window.update()
+    print('Complete.')
+    c.create_rectangle(560,0,1120,560,fill=white,outline=white)
+
+combine_bitplanes()
+window.mainloop()
