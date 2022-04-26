@@ -3,8 +3,8 @@ from time import sleep
 import os
 
 white = '#FFFFFF'
-lightgrey = '#777777'
-darkgrey = '#333333'
+lightgrey = '#999999'
+darkgrey = '#444444'
 black = '#000000'
 
 imagename = input('Enter the name of the image in Converted_Graphics: ')
@@ -75,7 +75,6 @@ def get_next_bits(amount_returned):
 width = bin_to_int(get_next_bits(4))
 height = bin_to_int(get_next_bits(4))
 firstbp = int(get_next_bits(1))
-currentpacket = int(get_next_bits(1))
 
 x = 0
 y = 0
@@ -85,10 +84,10 @@ v_offset = 7 - height
 c.create_rectangle(0,0,1120,80*v_offset,fill=white, outline = white)
 h_offset_left = 4 - ((width + 1)//2)
 h_offset_right = 3 - (width//2)
-c.create_rectangle(0,0,80*h_offset_left,560,fill='white', outline = white)
-c.create_rectangle(560,0,560+(80*h_offset_left),560,fill='white', outline = white)
-c.create_rectangle(560,0,560-(80*h_offset_right),560,fill='white', outline = white)
-c.create_rectangle(1120,0,1120-(80*h_offset_right),560,fill='white', outline = white)
+c.create_rectangle(0,0,80*h_offset_left,560,fill=white, outline = white)
+c.create_rectangle(560,0,560+(80*h_offset_left),560,fill=white, outline = white)
+c.create_rectangle(560,0,560-(80*h_offset_right),560,fill=white, outline = white)
+c.create_rectangle(1120,0,1120-(80*h_offset_right),560,fill=white, outline = white)
 window.update()
 
 x += 8*h_offset_left
@@ -110,11 +109,12 @@ for i in range(112):
 
 
 def decodebitplane():
-    global x, y, grid, currentpacket
+    global x, y, grid
+    currentpacket = bin_to_int(get_next_bits(1))
     pixelsdrawn = 0
     while True:
         if pixelsdrawn >= (8*width)*(8*height):
-            print('Decoded bitplane')
+            print('Decoded bitplane - raw data last')
             break
 
         if currentpacket == 0:
@@ -142,11 +142,13 @@ def decodebitplane():
             currentpacket = 1
 
         if pixelsdrawn >= (8*width)*(8*height):
-            print('Decoded bitplane')
+            print('Decoded bitplane - RLE packet last')
             break
 
         if currentpacket == 1:
             while True:
+                if pixelsdrawn >= (8*width)*(8*height):
+                    break
                 next2bits = get_next_bits(2)
                 if next2bits == '00':
                     break
@@ -187,14 +189,13 @@ else:
     x = 8*h_offset_left + 56
 y = 8*v_offset
 
-currentpacket = bin_to_int(get_next_bits(1))
 
 decodebitplane()
 sleep(1)
 
-def deltadecode(bitplane): #0 is left, 1 is right
+def deltadecode(bitplane):
     global grid, x, y
-    if bitplane == 0:
+    if bitplane == 1:
         xstart = 0
     else:
         xstart = 56
@@ -221,10 +222,16 @@ def deltadecode(bitplane): #0 is left, 1 is right
         window.update()
     print('Bitplane ' + str(bitplane) + ' delta decoded successfully.')
     
-def xor(): #no bitplane is needed, only uses right
+def xor(): #no bitplane is needed, only uses 2nd bitplane
     global x, y, grid
+    if firstbp == 1:
+        start = 56
+        end = 112
+    else:
+        start = 0
+        end = 56
     for y in range(56):
-        for x in range(56,112):
+        for x in range(start,end):
             if grid[x][y] == grid[x-56][y]:
                 c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
                 grid[x][y] = 0
@@ -241,7 +248,7 @@ if encodingmode == 1:
     sleep(1)
 
 elif encodingmode == 2:
-    deltadecode(0)
+    deltadecode(firstbp)
     sleep(1)
     xor()
     sleep(1)
