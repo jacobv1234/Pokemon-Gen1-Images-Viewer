@@ -2,10 +2,17 @@ from tkinter import *
 from time import sleep
 import os
 
-white = '#FFFFFF'
-lightgrey = '#999999'
-darkgrey = '#444444'
-black = '#000000'
+#grellow mode
+white = '#e0f8d0'
+lightgrey = '#88c070'
+darkgrey = '#346856'
+black = '#081820'
+
+#custom
+#white = '#FFFFFF'
+#lightgrey = '#009999'
+#darkgrey = '#004444'
+#black = '#000000'
 
 imagename = input('Enter the name of the image in Converted_Graphics: ')
 
@@ -159,7 +166,7 @@ def decodebitplane():
                             c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
                             grid[x][y] = 0
                         else:
-                            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black)
+                            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
                             grid[x][y] = 1
                         pixelsdrawn += 1
                         x += 1
@@ -211,7 +218,7 @@ def deltadecode(bitplane):
                 col = not col
             
             if col:
-                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black)
+                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
                 grid[x][y] = 1
             else:
                 c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
@@ -236,7 +243,7 @@ def xor(): #no bitplane is needed, only uses 2nd bitplane
                 c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
                 grid[x][y] = 0
             else:
-                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black)
+                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
                 grid[x][y] = 1
         window.update()
     print('XOR performed successfully.')
