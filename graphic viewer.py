@@ -4,12 +4,6 @@ import os
 
 # gbc colours are as BGR instead of RGB
 
-#custom
-white = '#2222ff'
-lightgrey = '#0000cc'
-darkgrey = '#000066'
-black = '#000000'
-
 imagename = input('''Enter the name of the image in Converted_Graphics:
 >>> ''')
 
@@ -27,8 +21,9 @@ while True:
 9 - Blue
 10 - Pink
 11 - Mew
->>>'''))
-    if colsystem <= 0 or colsystem >= 12:
+12 - Evolution
+>>> '''))
+    if colsystem <= 0 or colsystem >= 13:
         print('Enter a valid colour palette.')
         continue
     elif colsystem == 1:
@@ -38,12 +33,63 @@ while True:
         black = '#081820'
     elif colsystem == 2:
         white = '#f8e8f8'
-        lightgrey = '#80d0a0'
-        darkgrey = '#58a048'
-        black = '#101018'
+        lightgrey = '#a0d080'
+        darkgrey = '#48a058'
+        black = '#181010'
+    elif colsystem == 3:
+        white = '#f8e8f8'
+        lightgrey = '#f8a050'
+        darkgrey = '#d05030'
+        black = '#181010'
+    elif colsystem == 4:
+        white = '#f8e8f8'
+        lightgrey = '#a8c8e8'
+        darkgrey = '#7098c8'
+        black = '#181010'
+    elif colsystem == 5:
+        white = '#f8e8f8'
+        lightgrey = '#f8e070'
+        darkgrey = '#e0a000'
+        black = '#181010'
+    elif colsystem == 6:
+        white = '#f8e8f8'
+        lightgrey = '#e0a078'
+        darkgrey = '#a87048'
+        black = '#181010'
+    elif colsystem == 7:
+        white = '#f8e8f8'
+        lightgrey = '#d0a8b0'
+        darkgrey = '#787890'
+        black = '#181010'
+    elif colsystem == 8:
+        white = '#f8e8f8'
+        lightgrey = '#d8b0c0'
+        darkgrey = '#a878b8'
+        black = '#181010'
+    elif colsystem == 9:
+        white = '#f8e8f8'
+        lightgrey = '#90a0d8'
+        darkgrey = '#5878b8'
+        black = '#181010'
+    elif colsystem == 10:
+        white = '#f8e8f8'
+        lightgrey = '#f0b0c0'
+        darkgrey = '#e078a8'
+        black = '#181010'
+    elif colsystem == 11:
+        white = '#f8e8f8'
+        lightgrey = '#f0b088'
+        darkgrey = '#807098'
+        black = '#181010'
+    elif colsystem == 12:
+        white = '#f8e8f8'
+        lightgrey = '#383838'
+        darkgrey = '#101818'
+        black = '#181010'
     break
         
-
+showprocess = input('''Show the decompression process? (y/n)
+>>> ''')
 
 os.system('certutil -encodehex Converted_Graphics/'+imagename+'.bin temp.txt')
 
@@ -85,7 +131,10 @@ for char in rawhex:
     binarydata += hextobin[char]
 
 window = Tk()
-c = Canvas(width = 1120, height = 560, bg = white)
+if showprocess == 'y':
+    c = Canvas(width = 1120, height = 560, bg = white)
+else:
+    c = Canvas(width = 560, height = 560, bg = white)
 c.pack()
 
 
@@ -167,7 +216,8 @@ def decodebitplane():
             for i in range(zeropairs):
                 grid[x][y] = 0
                 grid[x+1][y] = 0
-                c.create_rectangle(x*10,y*10,(x*10)+20,(y*10)+10, fill = white, outline = white)
+                if showprocess == 'y':
+                    c.create_rectangle(x*10,y*10,(x*10)+20,(y*10)+10, fill = white, outline = white)
                 y += 1
                 if y >= 56:
                     y = 8*v_offset
@@ -192,10 +242,12 @@ def decodebitplane():
                 else:
                     for i in range(2):
                         if next2bits[i] == '0':
-                            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                            if showprocess == 'y':
+                                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
                             grid[x][y] = 0
                         else:
-                            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
+                            if showprocess == 'y':
+                                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
                             grid[x][y] = 1
                         pixelsdrawn += 1
                         x += 1
@@ -210,7 +262,8 @@ def decodebitplane():
             currentpacket = 0
 
 decodebitplane()
-sleep(1)
+if showprocess == 'y':
+    sleep(1)
 
 encodingmode = get_next_bits(1)
 if encodingmode == '1':
@@ -227,7 +280,8 @@ y = 8*v_offset
 
 
 decodebitplane()
-sleep(1)
+if showprocess == 'y':
+    sleep(1)
 
 def deltadecode(bitplane):
     global grid, x, y
@@ -247,10 +301,12 @@ def deltadecode(bitplane):
                 col = not col
             
             if col:
-                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
+                if showprocess == 'y':
+                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
                 grid[x][y] = 1
             else:
-                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                if showprocess == 'y':
+                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
                 grid[x][y] = 0
             
             x += 1
@@ -269,33 +325,42 @@ def xor(): #no bitplane is needed, only uses 2nd bitplane
     for y in range(56):
         for x in range(start,end):
             if grid[x][y] == grid[x-56][y]:
-                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                if showprocess == 'y':
+                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
                 grid[x][y] = 0
             else:
-                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
+                if showprocess == 'y':
+                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
                 grid[x][y] = 1
         window.update()
     print('XOR performed successfully.')
 
 if encodingmode == 1:
     deltadecode(0)
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
     deltadecode(1)
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
 
 elif encodingmode == 2:
     deltadecode(firstbp)
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
     xor()
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
 
 else:
     deltadecode(0)
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
     deltadecode(1)
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
     xor()
-    sleep(1)
+    if showprocess == 'y':
+        sleep(1)
 
 def combine_bitplanes():
     global x, y, grid
