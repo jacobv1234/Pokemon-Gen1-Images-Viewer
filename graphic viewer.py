@@ -2,19 +2,48 @@ from tkinter import *
 from time import sleep
 import os
 
-#grellow mode
-white = '#e0f8d0'
-lightgrey = '#88c070'
-darkgrey = '#346856'
-black = '#081820'
+# gbc colours are as BGR instead of RGB
 
 #custom
-#white = '#FFFFFF'
-#lightgrey = '#009999'
-#darkgrey = '#004444'
-#black = '#000000'
+white = '#2222ff'
+lightgrey = '#0000cc'
+darkgrey = '#000066'
+black = '#000000'
 
-imagename = input('Enter the name of the image in Converted_Graphics: ')
+imagename = input('''Enter the name of the image in Converted_Graphics:
+>>> ''')
+
+#colours
+while True:
+    colsystem = int(input('''Enter a colour scheme:
+1 - Grellow - Standard Game Boy colour
+2 - Green
+3 - Red
+4 - Cyan
+5 - Yellow
+6 - Brown
+7 - Grey
+8 - Purple
+9 - Blue
+10 - Pink
+11 - Mew
+>>>'''))
+    if colsystem <= 0 or colsystem >= 12:
+        print('Enter a valid colour palette.')
+        continue
+    elif colsystem == 1:
+        white = '#e0f8d0'
+        lightgrey = '#88c070'
+        darkgrey = '#346856'
+        black = '#081820'
+    elif colsystem == 2:
+        white = '#f8e8f8'
+        lightgrey = '#80d0a0'
+        darkgrey = '#58a048'
+        black = '#101018'
+    break
+        
+
 
 os.system('certutil -encodehex Converted_Graphics/'+imagename+'.bin temp.txt')
 
