@@ -137,6 +137,7 @@ else:
     c = Canvas(width = 560, height = 560, bg = white)
 c.pack()
 
+window.attributes('-topmost', True)
 
 def bin_to_int(binary):
     total = 0
