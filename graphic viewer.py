@@ -2,8 +2,6 @@ from tkinter import *
 from time import sleep
 import os
 
-# gbc colours are as BGR instead of RGB
-
 imagename = input('''Enter the name of the image in Converted_Graphics:
 >>> ''')
 
@@ -87,6 +85,9 @@ while True:
         darkgrey = '#101818'
         black = '#181010'
     break
+
+pixsize = int(input('''Enter the width of each pixel:
+>>> '''))
         
 showprocess = input('''Show the decompression process? (y/n)
 >>> ''')
@@ -132,9 +133,9 @@ for char in rawhex:
 
 window = Tk()
 if showprocess == 'y':
-    c = Canvas(width = 1120, height = 560, bg = white)
+    c = Canvas(width = 112 * pixsize, height = 56 * pixsize, bg = white)
 else:
-    c = Canvas(width = 560, height = 560, bg = white)
+    c = Canvas(width = 56 * pixsize, height = 56 * pixsize, bg = white)
 c.pack()
 
 window.attributes('-topmost', True)
@@ -167,13 +168,13 @@ y = 0
 
 #add whitespace
 v_offset = 7 - height
-c.create_rectangle(0,0,1120,80*v_offset,fill=white, outline = white)
+c.create_rectangle(0,0,112*pixsize,8*v_offset*pixsize,fill=white, outline = white)
 h_offset_left = 4 - ((width + 1)//2)
 h_offset_right = 3 - (width//2)
-c.create_rectangle(0,0,80*h_offset_left,560,fill=white, outline = white)
-c.create_rectangle(560,0,560+(80*h_offset_left),560,fill=white, outline = white)
-c.create_rectangle(560,0,560-(80*h_offset_right),560,fill=white, outline = white)
-c.create_rectangle(1120,0,1120-(80*h_offset_right),560,fill=white, outline = white)
+c.create_rectangle(0,0,8*h_offset_left*pixsize,56*pixsize,fill=white, outline = white)
+c.create_rectangle(56*pixsize,0,(56*pixsize)+(8*pixsize*h_offset_left),56*pixsize,fill=white, outline = white)
+c.create_rectangle(56*pixsize,0,(56*pixsize)-(8*pixsize*h_offset_right),56*pixsize,fill=white, outline = white)
+c.create_rectangle(112*pixsize,0,(112*pixsize)-(80*h_offset_right*pixsize),56*pixsize,fill=white, outline = white)
 window.update()
 
 x += 8*h_offset_left
@@ -218,7 +219,7 @@ def decodebitplane():
                 grid[x][y] = 0
                 grid[x+1][y] = 0
                 if showprocess == 'y':
-                    c.create_rectangle(x*10,y*10,(x*10)+20,(y*10)+10, fill = white, outline = white)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+(2*pixsize),(y*pixsize)+pixsize, fill = white, outline = white)
                 y += 1
                 if y >= 56:
                     y = 8*v_offset
@@ -244,11 +245,11 @@ def decodebitplane():
                     for i in range(2):
                         if next2bits[i] == '0':
                             if showprocess == 'y':
-                                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                                c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = white, outline = white)
                             grid[x][y] = 0
                         else:
                             if showprocess == 'y':
-                                c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
+                                c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = black, outline = black)
                             grid[x][y] = 1
                         pixelsdrawn += 1
                         x += 1
@@ -303,11 +304,11 @@ def deltadecode(bitplane):
             
             if col:
                 if showprocess == 'y':
-                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = black, outline = black)
                 grid[x][y] = 1
             else:
                 if showprocess == 'y':
-                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = white, outline = white)
                 grid[x][y] = 0
             
             x += 1
@@ -327,11 +328,11 @@ def xor(): #no bitplane is needed, only uses 2nd bitplane
         for x in range(start,end):
             if grid[x][y] == grid[x-56][y]:
                 if showprocess == 'y':
-                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = white, outline = white)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = white, outline = white)
                 grid[x][y] = 0
             else:
                 if showprocess == 'y':
-                    c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = black, outline = black)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = black, outline = black)
                 grid[x][y] = 1
         window.update()
     print('XOR performed successfully.')
@@ -376,10 +377,10 @@ def combine_bitplanes():
                 colour = darkgrey
             else:
                 colour = black
-            c.create_rectangle(x*10,y*10,(x*10)+10,(y*10)+10, fill = colour, outline = colour)
+            c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colour, outline = colour)
         window.update()
     print('Complete.')
-    c.create_rectangle(560,0,1120,560,fill=white,outline=white)
+    c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=white,outline=white)
 
 combine_bitplanes()
 window.mainloop()
