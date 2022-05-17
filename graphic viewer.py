@@ -350,7 +350,7 @@ def deltadecode(bitplane):
         x = xstart
         col = False
 
-        for j in range(56):
+        for j in range(56 - 8*h_offset_right):
             flipornot = grid[x][y]
             if flipornot == 1:
                 col = not col
