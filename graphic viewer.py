@@ -1,27 +1,37 @@
 from tkinter import *
 from time import sleep
 import os
+import random
 
 imagename = input('''Enter the name of the image in Converted_Graphics:
 >>> ''')
 
+rng = False
+if imagename.startswith('rng-'):
+    imagename = imagename.strip('rng-')
+    rng = True
+
 #colours
 while True:
     colsystem = int(input('''Enter a colour scheme:
-1 - Grellow - Standard Game Boy colour
-2 - Green
-3 - Red
-4 - Cyan
-5 - Yellow
-6 - Brown
-7 - Grey
-8 - Purple
-9 - Blue
-10 - Pink
-11 - Mew
-12 - Evolution
+1 - Game Boy Grellow
+2 - Game Boy Pocket Greyscale
+3 - GBC Green
+4 - GBC Red
+5 - GBC Cyan
+6 - GBC Yellow
+7 - GBC Brown
+8 - GBC Grey
+9 - GBC Purple
+10 - GBC Blue
+11 - GBC Pink
+12 - GBC Mew
+13 - GBC Evolution
+14 - Virtual Boy Red
+15 - Virtual Boy Red - Inverted
+16 - Custom
 >>> '''))
-    if colsystem <= 0 or colsystem >= 13:
+    if colsystem <= 0 or colsystem > 16:
         print('Enter a valid colour palette.')
         continue
     elif colsystem == 1:
@@ -30,60 +40,80 @@ while True:
         darkgrey = '#346856'
         black = '#081820'
     elif colsystem == 2:
+        white = '#ffffff'
+        lightgrey = '#a9a9a9'
+        darkgrey = '#545454'
+        black = '#000000'
+    elif colsystem == 3:
         white = '#f8e8f8'
         lightgrey = '#a0d080'
         darkgrey = '#48a058'
         black = '#181010'
-    elif colsystem == 3:
+    elif colsystem == 4:
         white = '#f8e8f8'
         lightgrey = '#f8a050'
         darkgrey = '#d05030'
         black = '#181010'
-    elif colsystem == 4:
+    elif colsystem == 5:
         white = '#f8e8f8'
         lightgrey = '#a8c8e8'
         darkgrey = '#7098c8'
         black = '#181010'
-    elif colsystem == 5:
+    elif colsystem == 6:
         white = '#f8e8f8'
         lightgrey = '#f8e070'
         darkgrey = '#e0a000'
         black = '#181010'
-    elif colsystem == 6:
+    elif colsystem == 7:
         white = '#f8e8f8'
         lightgrey = '#e0a078'
         darkgrey = '#a87048'
         black = '#181010'
-    elif colsystem == 7:
+    elif colsystem == 8:
         white = '#f8e8f8'
         lightgrey = '#d0a8b0'
         darkgrey = '#787890'
         black = '#181010'
-    elif colsystem == 8:
+    elif colsystem == 9:
         white = '#f8e8f8'
         lightgrey = '#d8b0c0'
         darkgrey = '#a878b8'
         black = '#181010'
-    elif colsystem == 9:
+    elif colsystem == 10:
         white = '#f8e8f8'
         lightgrey = '#90a0d8'
         darkgrey = '#5878b8'
         black = '#181010'
-    elif colsystem == 10:
+    elif colsystem == 11:
         white = '#f8e8f8'
         lightgrey = '#f0b0c0'
         darkgrey = '#e078a8'
         black = '#181010'
-    elif colsystem == 11:
+    elif colsystem == 12:
         white = '#f8e8f8'
         lightgrey = '#f0b088'
         darkgrey = '#807098'
         black = '#181010'
-    elif colsystem == 12:
+    elif colsystem == 13:
         white = '#f8e8f8'
         lightgrey = '#383838'
         darkgrey = '#101818'
         black = '#181010'
+    elif colsystem == 14:
+        white = '#ef0000'
+        lightgrey = '#a40000'
+        darkgrey = '#550000'
+        black = '#000000'
+    elif colsystem == 15:
+        black = '#ef0000'
+        darkgrey = '#a40000'
+        lightgrey = '#550000'
+        white = '#000000'
+    elif colsystem == 16:
+        white = input('Enter the hex code for the white: ')
+        lightgrey = input('Enter the hex code for the lightgrey: ')
+        darkgrey = input('Enter the hex code for the darkgrey: ')
+        black = input('Enter the hex code for the black: ')
     break
 
 pixsize = int(input('''Enter the width of each pixel:
@@ -92,10 +122,14 @@ pixsize = int(input('''Enter the width of each pixel:
 showprocess = input('''Show the decompression process? (y/n)
 >>> ''')
 
-os.system('certutil -encodehex Converted_Graphics/'+imagename+'.bin temp.txt')
+
+path = 'Converted_Graphics/' + imagename + '.bin'
+print(path)
+os.system(f'certutil -encodehex {path} temp.txt')
 
 file = open('temp.txt','r')
 content = file.readlines()
+
 file.close()
 middleonly = []
 for line in content:
@@ -105,6 +139,7 @@ for line in middleonly:
     for char in line:
         if char in ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9']:
             rawhex += char
+
 
 os.remove('temp.txt')
 
@@ -130,6 +165,18 @@ hextobin = {
 binarydata = ''
 for char in rawhex:
     binarydata += hextobin[char]
+if rng:
+    binarydata2 = binarydata[8:]
+    binarydata2 = [i for i in binarydata2]
+    random.shuffle(binarydata2)
+    binarydata2 = "".join(binarydata2)
+    binarydata = binarydata[:8] + binarydata2
+    print('''
+WARNING
+The CORRUPTOR has been activated.
+Results may not be as expected.
+Do not complain, you caused this.
+''')
 
 window = Tk()
 if showprocess == 'y':
@@ -154,8 +201,11 @@ def get_next_bits(amount_returned):
     global datapointer, binarydata
     returned_bits = ''
     for i in range(amount_returned):
-        returned_bits += binarydata[datapointer]
-        datapointer += 1
+        try:
+            returned_bits += binarydata[datapointer]
+            datapointer += 1
+        except IndexError:
+            returned_bits += '0'
     return returned_bits
 
 
@@ -216,16 +266,19 @@ def decodebitplane():
             zeropairs = firstnumber + secondnumber + 1
 
             for i in range(zeropairs):
-                grid[x][y] = 0
-                grid[x+1][y] = 0
-                if showprocess == 'y':
-                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+(2*pixsize),(y*pixsize)+pixsize, fill = white, outline = white)
-                y += 1
-                if y >= 56:
-                    y = 8*v_offset
-                    x += 2
-                window.update()
-                pixelsdrawn += 2
+                try:
+                    grid[x][y] = 0
+                    grid[x+1][y] = 0
+                    if showprocess == 'y':
+                        c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+(2*pixsize),(y*pixsize)+pixsize, fill = white, outline = white)
+                    y += 1
+                    if y >= 56:
+                        y = 8*v_offset
+                        x += 2
+                    window.update()
+                    pixelsdrawn += 2
+                except IndexError:
+                    pass
 
             currentpacket = 1
 
