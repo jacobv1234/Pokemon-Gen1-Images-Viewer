@@ -60,13 +60,14 @@ while True:
     smooth = int(input('''Choose a smoothing mode:
 1 - None
 2 - Basic smooth
-3 - Minimalist
-4 - AMOGUS MODE
-5 - Corruptor JR.
-6 - Hazy vision
-7 - 2-Tone
+3 - Basic smooth v2
+4 - Minimalist
+5 - AMOGUS MODE
+6 - Corruptor JR.
+7 - Hazy vision
+8 - 2-Tone
 >>> '''))
-    if smooth <= 0 or smooth > 7:
+    if smooth <= 0 or smooth > 8:
         print('Enter a valid smoothing mode.')
         continue
     break
@@ -369,43 +370,53 @@ else:
     if showprocess == 'y':
         sleep(1)
 
-def combine_bitplanes():
-    global x, y, grid
-    for y in range(56):
-        for x in range(56):
-            if grid[x][y] == 0 and grid[x+56][y] == 0:   pixColour = colours['white']
-            elif grid[x][y] == 0 and grid[x+56][y] == 1: pixColour = colours['lightgrey']
-            elif grid[x][y] == 1 and grid[x+56][y] == 0: pixColour = colours['darkgrey']
-            else:                                        pixColour = colours['black']
-            c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = pixColour, outline = pixColour)
-    print('Complete.')
-    window.update()
-    c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
 
 # Below this is a load of smoother shit, LOOK AT YOUR OWN RISK!
 def x3load():
     global x, y, grid, smooth
 
-    x3Data = resPlusPlus(grid, smooth)
-
-    i = 0
     sub = pixsize/3
 
     try:
         for y in range(56):
             for x in range(56):
+                if smooth == 1:
+                    if grid[x][y] == 0 and grid[x+56][y] == 0:   pixColour = colours['white']
+                    elif grid[x][y] == 0 and grid[x+56][y] == 1: pixColour = colours['lightgrey']
+                    elif grid[x][y] == 1 and grid[x+56][y] == 0: pixColour = colours['darkgrey']
+                    else:                                        pixColour = colours['black']
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = pixColour, outline = pixColour)
+                    continue
+                i = 0
                 for subY in range(3):
                     for subX in range(3):
-                        if   x3Data[i] == "4": pixColour = colours['white']
-                        elif x3Data[i] == "3": pixColour = colours['lightgrey']
-                        elif x3Data[i] == "2": pixColour = colours['darkgrey']
-                        else:                  pixColour = colours['black']
+                        s = []
+                        for yy in range(3):
+                            for xx in range(3):
+                                try:
+                                    if   grid[x+xx-1][y+yy-1] == 0 and grid[x+xx+55][y+yy-1] == 0: stemp = "4"
+                                    elif grid[x+xx-1][y+yy-1] == 0 and grid[x+xx+55][y+yy-1] == 1: stemp = "3"
+                                    elif grid[x+xx-1][y+yy-1] == 1 and grid[x+xx+55][y+yy-1] == 0: stemp = "2"
+                                    else:                                                          stemp = "1"
+                                except: stemp = "4"
+                                s.append(stemp)
+                        if smooth == 2:   data = smoothing(s)
+                        elif smooth == 3: data = smoothingv2(s)
+                        elif smooth == 4: data = minimalist_smooth(s)
+                        elif smooth == 5: data = amogus_smooth(s)
+                        elif smooth == 6: data = corruptor_jr(s)
+                        elif smooth == 7: data = hazy_smooth(s)
+                        elif smooth == 8: data = cum_mode(s)
+                        if   data[i] == "4": pixColour = colours['white']
+                        elif data[i] == "3": pixColour = colours['lightgrey']
+                        elif data[i] == "2": pixColour = colours['darkgrey']
+                        else:                pixColour = colours['black']
                         c.create_rectangle((x*pixsize)+sub*(subX),(y*pixsize)+sub*(subY),(x*pixsize)+sub*(subX+1),(y*pixsize)+sub*(subY+1), fill = pixColour, outline = pixColour)
                         i += 1
-        window.update()
-        print('Upscaling rendered.')
+            window.update()
+        print('Rendered.')
         c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
-    except: print('Fatal error rendering upscaling.')
+    except: print('Fatal error rendering.')
 
 def smoothing(s):
     newtile = []
@@ -522,39 +533,25 @@ def cum_mode(s):
 
     return data
 
-def resPlusPlus(grid, smooth):
+def smoothingv2(s):
+    newtile = []
+    for x in range(9): newtile.append(s[4])
+    pixcolour = s[4]
+
+    if s[0] == s[1] == s[3] and s[0] > pixcolour: newtile[0] = s[0]
+    if s[2] == s[1] == s[5] and s[2] > pixcolour: newtile[2] = s[2]
+    if s[6] == s[7] == s[3] and s[6] > pixcolour: newtile[6] = s[6]
+    if s[8] == s[7] == s[5] and s[8] > pixcolour: newtile[8] = s[8]
+
+    if s[1] == s[3] < pixcolour and int(newtile[0]) != int(s[1]): newtile[0] = s[1]
+    if s[1] == s[5] < pixcolour and int(newtile[2]) != int(s[1]): newtile[2] = s[1]
+    if s[7] == s[3] < pixcolour and int(newtile[6]) != int(s[7]): newtile[6] = s[7]
+    if s[7] == s[5] < pixcolour and int(newtile[8]) != int(s[7]): newtile[8] = s[7]
+
     data = ""
-    try:
-        data = ""
-        for y in range(56):
-            for x in range(56):
-                s = []
-                for yy in range(3):
-                    for xx in range(3):
-                        try:
-                            if   grid[x+xx-1][y+yy-1] == 0 and grid[x+xx+55][y+yy-1] == 0: stemp = "4"
-                            elif grid[x+xx-1][y+yy-1] == 0 and grid[x+xx+55][y+yy-1] == 1: stemp = "3"
-                            elif grid[x+xx-1][y+yy-1] == 1 and grid[x+xx+55][y+yy-1] == 0: stemp = "2"
-                            else:                                            stemp = "1"
-                        except: stemp = "4"
-                        s.append(stemp)
-                if smooth == 2:   data += smoothing(s)
-                elif smooth == 3: data += minimalist_smooth(s)
-                elif smooth == 4: data += amogus_smooth(s)
-                elif smooth == 5: data += corruptor_jr(s)
-                elif smooth == 6: data += hazy_smooth(s)
-                elif smooth == 7: data += cum_mode(s)
-        print("Upscaling calculated.")
-    except Exception as e: print("Fatal error calculating upscaling.\n" + str(e))
+    for x in range(9): data += newtile[x]
+
     return data
 
-combine_bitplanes()
-if smooth != 1:
-    print('''
-UH OH, SPAGHETTIO!
-Smoothing has been activated.
-Smoothing is still WIP.
-Combine this with the CORRUPTOR for extra flavour.
-''')
-    x3load()
+x3load()
 window.mainloop()
