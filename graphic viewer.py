@@ -3,12 +3,15 @@ from time import sleep
 import os
 import random
 
-imagename = input('''Enter the name of the image in Converted_Graphics:
->>> ''')
+imagename = ""
+while imagename.strip('!') + ".bin" not in os.listdir("Converted_Graphics"):
+    imagename = input('''Enter the name of the image in Converted_Graphics:
+(You can use \"!\" to corrupt the pokemon, for example: \"!mew\")
+>>> Converted_Graphics/''')
 
 rng = False
-if imagename.startswith('rng-'):
-    imagename = imagename.strip('rng-')
+if imagename.startswith('!'):
+    imagename = imagename.strip('!')
     rng = True
 
 #colours
@@ -34,91 +37,43 @@ while True:
     if colsystem <= 0 or colsystem > 16:
         print('Enter a valid colour palette.')
         continue
-    elif colsystem == 1:
-        white = '#e0f8d0'
-        lightgrey = '#88c070'
-        darkgrey = '#346856'
-        black = '#081820'
-    elif colsystem == 2:
-        white = '#ffffff'
-        lightgrey = '#a9a9a9'
-        darkgrey = '#545454'
-        black = '#000000'
-    elif colsystem == 3:
-        white = '#f8e8f8'
-        lightgrey = '#a0d080'
-        darkgrey = '#48a058'
-        black = '#181010'
-    elif colsystem == 4:
-        white = '#f8e8f8'
-        lightgrey = '#f8a050'
-        darkgrey = '#d05030'
-        black = '#181010'
-    elif colsystem == 5:
-        white = '#f8e8f8'
-        lightgrey = '#a8c8e8'
-        darkgrey = '#7098c8'
-        black = '#181010'
-    elif colsystem == 6:
-        white = '#f8e8f8'
-        lightgrey = '#f8e070'
-        darkgrey = '#e0a000'
-        black = '#181010'
-    elif colsystem == 7:
-        white = '#f8e8f8'
-        lightgrey = '#e0a078'
-        darkgrey = '#a87048'
-        black = '#181010'
-    elif colsystem == 8:
-        white = '#f8e8f8'
-        lightgrey = '#d0a8b0'
-        darkgrey = '#787890'
-        black = '#181010'
-    elif colsystem == 9:
-        white = '#f8e8f8'
-        lightgrey = '#d8b0c0'
-        darkgrey = '#a878b8'
-        black = '#181010'
-    elif colsystem == 10:
-        white = '#f8e8f8'
-        lightgrey = '#90a0d8'
-        darkgrey = '#5878b8'
-        black = '#181010'
-    elif colsystem == 11:
-        white = '#f8e8f8'
-        lightgrey = '#f0b0c0'
-        darkgrey = '#e078a8'
-        black = '#181010'
-    elif colsystem == 12:
-        white = '#f8e8f8'
-        lightgrey = '#f0b088'
-        darkgrey = '#807098'
-        black = '#181010'
-    elif colsystem == 13:
-        white = '#f8e8f8'
-        lightgrey = '#383838'
-        darkgrey = '#101818'
-        black = '#181010'
-    elif colsystem == 14:
-        white = '#ef0000'
-        lightgrey = '#a40000'
-        darkgrey = '#550000'
-        black = '#000000'
-    elif colsystem == 15:
-        black = '#ef0000'
-        darkgrey = '#a40000'
-        lightgrey = '#550000'
-        white = '#000000'
-    elif colsystem == 16:
-        white = input('Enter the hex code for the white: ')
-        lightgrey = input('Enter the hex code for the lightgrey: ')
-        darkgrey = input('Enter the hex code for the darkgrey: ')
-        black = input('Enter the hex code for the black: ')
+    elif colsystem == 1: colours = {"white": "#e0f8d0", "lightgrey": "#88c070", "darkgrey": "#346856", "black": "#081820"}
+    elif colsystem == 2: colours = {"white": "#ffffff", "lightgrey": "#a9a9a9", "darkgrey": "#545454", "black": "#000000"}
+    elif colsystem == 3: colours = {"white": "#f8e8f8", "lightgrey": "#a0d080", "darkgrey": "#48a058", "black": "#181010"}
+    elif colsystem == 4: colours = {"white": "#f8e8f8", "lightgrey": "#f8a050", "darkgrey": "#d05030", "black": "#181010"}
+    elif colsystem == 5: colours = {"white": "#f8e8f8", "lightgrey": "#a8c8e8", "darkgrey": "#7098c8", "black": "#181010"}
+    elif colsystem == 6: colours = {"white": "#f8e8f8", "lightgrey": "#f8e070", "darkgrey": "#e0a000", "black": "#181010"}
+    elif colsystem == 7: colours = {"white": "#f8e8f8", "lightgrey": "#e0a078", "darkgrey": "#a87048", "black": "#181010"}
+    elif colsystem == 8: colours = {"white": "#f8e8f8", "lightgrey": "#d0a8b0", "darkgrey": "#787890", "black": "#181010"}
+    elif colsystem == 9: colours = {"white": "#f8e8f8", "lightgrey": "#d8b0c0", "darkgrey": "#a878b8", "black": "#181010"}
+    elif colsystem == 10:colours = {"white": "#f8e8f8", "lightgrey": "#90a0d8", "darkgrey": "#5878b8", "black": "#181010"}
+    elif colsystem == 11:colours = {"white": "#f8e8f8", "lightgrey": "#f0b0c0", "darkgrey": "#e078a8", "black": "#181010"}
+    elif colsystem == 12:colours = {"white": "#f8e8f8", "lightgrey": "#f0b088", "darkgrey": "#807098", "black": "#181010"}
+    elif colsystem == 13:colours = {"white": "#f8e8f8", "lightgrey": "#383838", "darkgrey": "#101818", "black": "#181010"}
+    elif colsystem == 14:colours = {"white": "#ef0000", "lightgrey": "#a40000", "darkgrey": "#550000", "black": "#000000"}
+    elif colsystem == 15:colours = {"white": "#000000", "lightgrey": "#550000", "darkgrey": "#a40000", "black": "#ef0000"}
+    elif colsystem == 16:colours = {"white": input('Enter the hex code for the white: '), "lightgrey": input('Enter the hex code for the lightgrey: '), "darkgrey": input('Enter the hex code for the darkgrey: '), "black": input('Enter the hex code for the black: ')}
+    break
+
+#colours
+while True:
+    smooth = int(input('''Choose a smoothing mode:
+1 - None
+2 - Basic smooth
+3 - Minimalist
+4 - AMOGUS MODE
+5 - Corruptor JR.
+6 - Hazy vision
+7 - 2-Tone
+>>> '''))
+    if smooth <= 0 or smooth > 7:
+        print('Enter a valid smoothing mode.')
+        continue
     break
 
 pixsize = int(input('''Enter the width of each pixel:
 >>> '''))
-        
+
 showprocess = input('''Show the decompression process? (y/n)
 >>> ''')
 
@@ -139,7 +94,6 @@ for line in middleonly:
     for char in line:
         if char in ['a','b','c','d','e','f','0','1','2','3','4','5','6','7','8','9']:
             rawhex += char
-
 
 os.remove('temp.txt')
 
@@ -180,9 +134,9 @@ Do not complain, you caused this.
 
 window = Tk()
 if showprocess == 'y':
-    c = Canvas(width = 112 * pixsize, height = 56 * pixsize, bg = white)
+    c = Canvas(width = 112 * pixsize, height = 56 * pixsize, bg = colours['white'])
 else:
-    c = Canvas(width = 56 * pixsize, height = 56 * pixsize, bg = white)
+    c = Canvas(width = 56 * pixsize, height = 56 * pixsize, bg = colours['white'])
 c.pack()
 
 window.attributes('-topmost', True)
@@ -218,13 +172,13 @@ y = 0
 
 #add whitespace
 v_offset = 7 - height
-c.create_rectangle(0,0,112*pixsize,8*v_offset*pixsize,fill=white, outline = white)
+c.create_rectangle(0,0,112*pixsize,8*v_offset*pixsize,fill=colours['white'], outline = colours['white'])
 h_offset_left = 4 - ((width + 1)//2)
 h_offset_right = 3 - (width//2)
-c.create_rectangle(0,0,8*h_offset_left*pixsize,56*pixsize,fill=white, outline = white)
-c.create_rectangle(56*pixsize,0,(56*pixsize)+(8*pixsize*h_offset_left),56*pixsize,fill=white, outline = white)
-c.create_rectangle(56*pixsize,0,(56*pixsize)-(8*pixsize*h_offset_right),56*pixsize,fill=white, outline = white)
-c.create_rectangle(112*pixsize,0,(112*pixsize)-(80*h_offset_right*pixsize),56*pixsize,fill=white, outline = white)
+c.create_rectangle(0,0,8*h_offset_left*pixsize,56*pixsize,fill=colours['white'], outline = colours['white'])
+c.create_rectangle(56*pixsize,0,(56*pixsize)+(8*pixsize*h_offset_left),56*pixsize,fill=colours['white'], outline = colours['white'])
+c.create_rectangle(56*pixsize,0,(56*pixsize)-(8*pixsize*h_offset_right),56*pixsize,fill=colours['white'], outline = colours['white'])
+c.create_rectangle(112*pixsize,0,(112*pixsize)-(80*h_offset_right*pixsize),56*pixsize,fill=colours['white'], outline = colours['white'])
 window.update()
 
 x += 8*h_offset_left
@@ -242,8 +196,6 @@ for i in range(112):
     for j in range(56):
         column.append(0)
     grid.append(column)
-
-
 
 def decodebitplane():
     global x, y, grid
@@ -270,7 +222,7 @@ def decodebitplane():
                     grid[x][y] = 0
                     grid[x+1][y] = 0
                     if showprocess == 'y':
-                        c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+(2*pixsize),(y*pixsize)+pixsize, fill = white, outline = white)
+                        c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+(2*pixsize),(y*pixsize)+pixsize, fill = colours['white'], outline = colours['white'])
                     y += 1
                     if y >= 56:
                         y = 8*v_offset
@@ -298,11 +250,11 @@ def decodebitplane():
                     for i in range(2):
                         if next2bits[i] == '0':
                             if showprocess == 'y':
-                                c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = white, outline = white)
+                                c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colours['white'], outline = colours['white'])
                             grid[x][y] = 0
                         else:
                             if showprocess == 'y':
-                                c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = black, outline = black)
+                                c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colours['black'], outline = colours['black'])
                             grid[x][y] = 1
                         pixelsdrawn += 1
                         x += 1
@@ -350,18 +302,18 @@ def deltadecode(bitplane):
         x = xstart
         col = False
 
-        for j in range(56 - 8*h_offset_right):
+        for j in range(56-8*h_offset_right):
             flipornot = grid[x][y]
             if flipornot == 1:
                 col = not col
             
             if col:
                 if showprocess == 'y':
-                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = black, outline = black)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colours['black'], outline = colours['black'])
                 grid[x][y] = 1
             else:
                 if showprocess == 'y':
-                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = white, outline = white)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colours['white'], outline = colours['white'])
                 grid[x][y] = 0
             
             x += 1
@@ -381,11 +333,11 @@ def xor(): #no bitplane is needed, only uses 2nd bitplane
         for x in range(start,end):
             if grid[x][y] == grid[x-56][y]:
                 if showprocess == 'y':
-                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = white, outline = white)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colours['white'], outline = colours['white'])
                 grid[x][y] = 0
             else:
                 if showprocess == 'y':
-                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = black, outline = black)
+                    c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colours['black'], outline = colours['black'])
                 grid[x][y] = 1
         window.update()
     print('XOR performed successfully.')
@@ -421,19 +373,188 @@ def combine_bitplanes():
     global x, y, grid
     for y in range(56):
         for x in range(56):
-            colour = ''
-            if grid[x][y] == 0 and grid[x+56][y] == 0:
-                colour = white
-            elif grid[x][y] == 0 and grid[x+56][y] == 1:
-                colour = lightgrey
-            elif grid[x][y] == 1 and grid[x+56][y] == 0:
-                colour = darkgrey
-            else:
-                colour = black
-            c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = colour, outline = colour)
-        window.update()
+            if grid[x][y] == 0 and grid[x+56][y] == 0:   pixColour = colours['white']
+            elif grid[x][y] == 0 and grid[x+56][y] == 1: pixColour = colours['lightgrey']
+            elif grid[x][y] == 1 and grid[x+56][y] == 0: pixColour = colours['darkgrey']
+            else:                                        pixColour = colours['black']
+            c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = pixColour, outline = pixColour)
+            window.update()
     print('Complete.')
-    c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=white,outline=white)
+    c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
+
+# Below this is a load of smoother shit, LOOK AT YOUR OWN RISK!
+def x3load():
+    global x, y, grid, smooth
+
+    x3Data = resPlusPlus(grid, smooth)
+
+    i = 0
+    sub = pixsize/3
+
+    try:
+        for y in range(56):
+            for x in range(56):
+                for subY in range(3):
+                    for subX in range(3):
+                        if   x3Data[i] == "4": pixColour = colours['white']
+                        elif x3Data[i] == "3": pixColour = colours['lightgrey']
+                        elif x3Data[i] == "2": pixColour = colours['darkgrey']
+                        else:                  pixColour = colours['black']
+                        c.create_rectangle((x*pixsize)+sub*(subX),(y*pixsize)+sub*(subY),(x*pixsize)+sub*(subX+1),(y*pixsize)+sub*(subY+1), fill = pixColour, outline = pixColour)
+                        i += 1
+        window.update()
+        print('Upscaling rendered.')
+        c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
+    except: print('Fatal error rendering upscaling.')
+
+def smoothing(s):
+    newtile = []
+    for x in range(9): newtile.append(s[4])
+    pixcolour = s[4]
+
+    if s[0] == s[1] == s[3]:
+        if s[0] != pixcolour:
+            newtile[0] = s[0]
+    if s[2] == s[1] == s[5]:
+        if s[2] != pixcolour:
+            newtile[2] = s[2]
+    if s[6] == s[7] == s[3]:
+        if s[6] != pixcolour:
+            newtile[6] = s[6]
+    if s[8] == s[7] == s[5]:
+        if s[8] != pixcolour:
+            newtile[8] = s[8]
+
+    data = ""
+    for x in range(9): data += newtile[x]
+
+    return data
+
+def minimalist_smooth(s):
+    newtile = []
+    for x in range(9): newtile.append(s[4])
+    pixcolour = s[4]
+
+    for x in range(4):
+        t = str(x+1)
+        if s[1] == t:
+            if int(t) > int(pixcolour):
+                newtile[0] = t
+                newtile[1] = t
+                newtile[2] = t
+        if s[3] == t:
+            if int(t) > int(pixcolour):
+                newtile[0] = t
+                newtile[3] = t
+                newtile[6] = t
+        if s[7] == t:
+            if int(t) > int(pixcolour):
+                newtile[6] = t
+                newtile[7] = t
+                newtile[8] = t
+        if s[5] == t:
+            if int(t) > int(pixcolour):
+                newtile[2] = t
+                newtile[5] = t
+                newtile[8] = t
+
+    data = ""
+    for x in range(9): data += newtile[x]
+
+    return data
+
+def amogus_smooth(s):
+    newtile = []
+    for x in range(9): newtile.append(s[4])
+    pixcolour = s[4]
+
+    for x in range(4):
+        t = str(x+1)
+        if s[1] == t:
+            if int(t) > int(pixcolour):
+                newtile[0] = t
+                newtile[1] = t
+                newtile[2] = t
+        if s[3] == t:
+            if int(t) < int(pixcolour):
+                newtile[0] = t
+                newtile[3] = t
+                newtile[6] = t
+        if s[7] == t:
+            if int(t) < int(pixcolour):
+                newtile[6] = t
+                newtile[7] = t
+                newtile[8] = t
+        if s[5] == t:
+            if int(t) < int(pixcolour):
+                newtile[2] = t
+                newtile[5] = t
+                newtile[8] = t
+
+    data = ""
+    for x in range(9): data += newtile[x]
+
+    return data
+
+def corruptor_jr(s):
+    mode = random.randint(1, 4)
+    if mode == 1:   return smoothing(s)
+    elif mode == 2: return minimalist_smooth(s)
+    elif mode == 3: return amogus_smooth(s)
+    elif mode == 4: return hazy_smooth(s)
+
+def hazy_smooth(s):
+    data = ""
+    for x in range(9): data += s[x]
+
+    return data
+
+def cum_mode(s):
+    newtile = []
+    for x in range(9): newtile.append(s[4])
+
+    for x in range(len(newtile)):
+        if newtile[x] != "4":
+            newtile[x] = "3"
+            
+    data = ""
+    for x in range(9): data += newtile[x]
+
+    return data
+
+def resPlusPlus(grid, smooth):
+    data = ""
+    try:
+        data = ""
+        for y in range(56):
+            for x in range(56):
+                s = []
+                for yy in range(3):
+                    for xx in range(3):
+                        try:
+                            if   grid[x+xx-1][y+yy-1] == 0 and grid[x+xx+55][y+yy-1] == 0: stemp = "4"
+                            elif grid[x+xx-1][y+yy-1] == 0 and grid[x+xx+55][y+yy-1] == 1: stemp = "3"
+                            elif grid[x+xx-1][y+yy-1] == 1 and grid[x+xx+55][y+yy-1] == 0: stemp = "2"
+                            else:                                            stemp = "1"
+                        except: stemp = "4"
+                        s.append(stemp)
+                if smooth == 2:   data += smoothing(s)
+                elif smooth == 3: data += minimalist_smooth(s)
+                elif smooth == 4: data += amogus_smooth(s)
+                elif smooth == 5: data += corruptor_jr(s)
+                elif smooth == 6: data += hazy_smooth(s)
+                elif smooth == 7: data += cum_mode(s)
+        print("Upscaling calculated.")
+    except Exception as e: print("Fatal error calculating upscaling.\n" + str(e))
+    return data
 
 combine_bitplanes()
+if smooth != 1:
+    print('''
+UH OH, SPAGHETTIO!
+Smoothing has been activated.
+Smoothing is still WIP.
+Combine this with the CORRUPTOR for extra flavour.
+''')
+    x3load()
 window.mainloop()
