@@ -3,8 +3,6 @@ from time import sleep
 import os
 import random
 
-from pyparsing import nested_expr
-
 imagename = ""
 while imagename.strip('!') + ".bin" not in os.listdir("Converted_Graphics"):
     imagename = input('''Enter the name of the image in Converted_Graphics:
@@ -71,8 +69,9 @@ Pixel width should be a multiple of 3 unless specified otherwise.
 8 - 2-Tone
 9 - Amogus Special (Pixel width should be a multiple of 4)
 10 - UwU Mode (Pixel width should be a multiple of 5)
+11 - Outlined Pixels (Pixel width should be a multiple of 5)
 >>> '''))
-    if smooth <= 0 or smooth > 10:
+    if smooth <= 0 or smooth > 11:
         print('Enter a valid smoothing mode.')
         continue
     break
@@ -614,7 +613,32 @@ def uwu_mode():
         c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
     except Exception as e: print('Fatal error rendering.\n' + str(e))
 
+def outlinepixels():
+    global x, y, grid
+
+    sub = pixsize/5
+
+    border = [[1, 1, 1, 1, 1], [1, 0, 0,0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 1]]
+
+    try:
+        for y in range(56):
+            for x in range(56):
+                for subY in range(5):
+                    for subX in range(5):
+                        temp = str(-(grid[x][y]*2 + grid[x+56][y]) + 4)
+                        if   temp == "4": pixColour = colours['white']
+                        elif temp == "3": pixColour = colours['lightgrey']
+                        elif temp == "2": pixColour = colours['darkgrey']
+                        else:             pixColour = colours['black']
+                        if border[subX][subY] == 0:pixColour = colours['white']
+                        c.create_rectangle((x*pixsize)+sub*(subX),(y*pixsize)+sub*(subY),(x*pixsize)+sub*(subX+1),(y*pixsize)+sub*(subY+1), fill = pixColour, outline = pixColour)
+            window.update()
+        print('Rendered.')
+        c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
+    except Exception as e: print('Fatal error rendering.\n' + str(e))
+
 if smooth == 9: amogus_special()
 if smooth == 10: uwu_mode()
+if smooth == 11: outlinepixels()
 else: render()
 window.mainloop()
