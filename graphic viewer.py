@@ -370,6 +370,7 @@ else:
     if showprocess == 'y':
         sleep(1)
 
+
 # Below this is a load of smoother shit, LOOK AT YOUR OWN RISK!
 def x3load():
     global x, y, grid, smooth
