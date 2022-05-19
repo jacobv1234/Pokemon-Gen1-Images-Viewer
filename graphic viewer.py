@@ -378,8 +378,8 @@ def combine_bitplanes():
             elif grid[x][y] == 1 and grid[x+56][y] == 0: pixColour = colours['darkgrey']
             else:                                        pixColour = colours['black']
             c.create_rectangle(x*pixsize,y*pixsize,(x*pixsize)+pixsize,(y*pixsize)+pixsize, fill = pixColour, outline = pixColour)
-            window.update()
     print('Complete.')
+    window.update()
     c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
 
 # Below this is a load of smoother shit, LOOK AT YOUR OWN RISK!
