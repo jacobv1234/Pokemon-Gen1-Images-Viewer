@@ -3,6 +3,8 @@ from time import sleep
 import os
 import random
 
+from pyparsing import nested_expr
+
 imagename = ""
 while imagename.strip('!') + ".bin" not in os.listdir("Converted_Graphics"):
     imagename = input('''Enter the name of the image in Converted_Graphics:
@@ -58,7 +60,8 @@ while True:
 #colours
 while True:
     smooth = int(input('''Choose a smoothing mode:
-1 - None
+Pixel width should be a multiple of 3 unless specified otherwise.
+1 - None (No required pixel width)
 2 - Basic smooth
 3 - Basic smooth v2
 4 - Minimalist
@@ -66,8 +69,10 @@ while True:
 6 - Corruptor JR.
 7 - Hazy vision
 8 - 2-Tone
+9 - Amogus Special (Pixel width should be a multiple of 4)
+10 - UwU Mode (Pixel width should be a multiple of 5)
 >>> '''))
-    if smooth <= 0 or smooth > 8:
+    if smooth <= 0 or smooth > 10:
         print('Enter a valid smoothing mode.')
         continue
     break
@@ -370,9 +375,8 @@ else:
     if showprocess == 'y':
         sleep(1)
 
-
 # Below this is a load of smoother shit, LOOK AT YOUR OWN RISK!
-def x3load():
+def render():
     global x, y, grid, smooth
 
     sub = pixsize/3
@@ -513,6 +517,7 @@ def corruptor_jr(s):
     elif mode == 2: return minimalist_smooth(s)
     elif mode == 3: return amogus_smooth(s)
     elif mode == 4: return hazy_smooth(s)
+    elif mode == 5: return smoothingv2(s)
 
 def hazy_smooth(s):
     data = ""
@@ -553,5 +558,63 @@ def smoothingv2(s):
 
     return data
 
-x3load()
+def amogus_special():
+    global x, y, grid
+
+    sub = pixsize/4
+
+    sussy = [[0, 1, 1, 0], [1, 1, 1, 1], [1, 0, 1, 0], [1, 0, 1, 1]]
+
+    try:
+        for y in range(56):
+            for x in range(56):
+                for subY in range(4):
+                    for subX in range(4):
+                        temp = str(-(grid[x][y]*2 + grid[x+56][y]) + 4)
+                        if   temp == "4": pixColour = colours['white']
+                        elif temp == "3": pixColour = colours['lightgrey']
+                        elif temp == "2": pixColour = colours['darkgrey']
+                        else:             pixColour = colours['black']
+                        if sussy[subX][subY] == 0:pixColour = colours['white']
+                        c.create_rectangle((x*pixsize)+sub*(subX),(y*pixsize)+sub*(subY),(x*pixsize)+sub*(subX+1),(y*pixsize)+sub*(subY+1), fill = pixColour, outline = pixColour)
+            window.update()
+        print('Rendered.')
+        c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
+    except Exception as e: print('Fatal error rendering.\n' + str(e))
+
+def uwu_mode():
+    global x, y, grid
+
+    sub = pixsize/5
+
+    letterU = [[0, 0, 0, 0, 0], [1, 1, 1, 1, 1], [0, 0, 0, 0, 1], [1, 1, 1, 1, 1], [0, 0, 0, 0, 0]]
+    letterW = [[1, 1, 1, 1, 0], [0, 0, 0, 0, 1], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 1, 1, 1, 0]]
+
+    UwU = True
+
+    try:
+        for y in range(56):
+            if UwU: UwU = False
+            else: UwU = True
+            for x in range(56):
+                if UwU: UwU = False
+                else: UwU = True
+                for subY in range(5):
+                    for subX in range(5):
+                        temp = str(-(grid[x][y]*2 + grid[x+56][y]) + 4)
+                        if   temp == "4": pixColour = colours['white']
+                        elif temp == "3": pixColour = colours['lightgrey']
+                        elif temp == "2": pixColour = colours['darkgrey']
+                        else:             pixColour = colours['black']
+                        if letterU[subX][subY] == 0 and UwU:pixColour = colours['white']
+                        if letterW[subX][subY] == 0 and not UwU:pixColour = colours['white']
+                        c.create_rectangle((x*pixsize)+sub*(subX),(y*pixsize)+sub*(subY),(x*pixsize)+sub*(subX+1),(y*pixsize)+sub*(subY+1), fill = pixColour, outline = pixColour)
+            window.update()
+        print('Rendered.')
+        c.create_rectangle(56*pixsize,0,112*pixsize,56*pixsize,fill=colours['white'],outline=colours['white'])
+    except Exception as e: print('Fatal error rendering.\n' + str(e))
+
+if smooth == 9: amogus_special()
+if smooth == 10: uwu_mode()
+else: render()
 window.mainloop()
